@@ -73,15 +73,16 @@ module Selenium
 
         def connect_until_stable
           poller = SocketPoller.new(@host, @port, STABLE_CONNECTION_TIMEOUT)
-
-          unless poller.connected?
-            msg = "unable to obtain stable firefox connection in #{STABLE_CONNECTION_TIMEOUT} seconds (#{@host}:#{@port})"
+          
+          connected = poller.connected? do
             if @binary.exited?
-              msg += "; note: firefox binary exited, check that firefox starts successfully"
-            else
-              @binary.quit
+              raise Error::WebDriverError, "firefox binary exited while waiting to obtain stable firefox connection"
             end
-            raise Error::WebDriverError, msg
+          end
+
+          unless connected
+            @binary.quit
+            raise Error::WebDriverError, "unable to obtain stable firefox connection in #{STABLE_CONNECTION_TIMEOUT} seconds (#{@host}:#{@port})"
           end
         end
 

@@ -20,7 +20,13 @@ module Selenium
       #
 
       def connected?
-        with_timeout { listening? }
+        with_timeout do
+          listening?.tap do
+            if block_given?
+              yield
+            end
+          end
+        end
       end
 
       #
@@ -31,7 +37,13 @@ module Selenium
       #
 
       def closed?
-        with_timeout { not listening? }
+        with_timeout do
+          (not listening?).tap do
+            if block_given?
+              yield
+            end
+          end
+        end
       end
 
       private
