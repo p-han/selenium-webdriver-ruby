@@ -46,6 +46,10 @@ module Selenium
         def wait
           @process.poll_for_exit(WAIT_TIMEOUT) if @process
         end
+        
+        def exited?
+          @process.exited?
+        end
 
         private
 
